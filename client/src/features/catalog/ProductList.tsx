@@ -1,18 +1,25 @@
-import { Grid } from "@mui/material";
+import { Box } from "@mui/material";
 import { Product } from "../../app/models/product";
 import ProductCard from "./ProductCard";
 
 interface Props {
   products: Product[];
 }
+
 export default function ProductList({ products }: Props) {
   return (
-    <Grid container spacing={4}>
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)', // 4 equal columns
+        gap: 2, // MUI spacing unit (theme.spacing)
+      }}
+    >
       {products.map((product) => (
-        <Grid item xs={4} key={product.id}>
+        <Box key={product.id}>
           <ProductCard product={product} />
-        </Grid>
+        </Box>
       ))}
-    </Grid>
+    </Box>
   );
 }

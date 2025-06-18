@@ -53,7 +53,7 @@ public class ProductController {
 			@RequestParam(name = "keyword" , required = false) String keyword,
 			@RequestParam(name="brandId", required = false) Integer brandId,
 			@RequestParam(name="typeId", required = false) Integer typeId,
-			@RequestParam(name="sort", defaultValue = "name") String  sort,
+			@RequestParam(name="sort", defaultValue ="name") String  sort,
 			@RequestParam(name="order", defaultValue = "asc") String order
 			){
 		//Convert order to Sort direction
@@ -75,6 +75,7 @@ public class ProductController {
 		return new ResponseEntity<>(typeResponses,HttpStatus.OK);
 	}
 }	
+
 
 
 

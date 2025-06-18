@@ -1,12 +1,33 @@
-import Catalog from "../../features/catalog/Catalog"
-function App() {
+import {useState} from "react";
+import { Container,CssBaseline , createTheme} from "@mui/material";
+//import Catalog from "../../features/catalog/Catalog";
+import Header from "./Header";
+import { ThemeProvider } from "@emotion/react";
+import { Outlet } from "react-router-dom";
 
+
+
+function App() {
+  const [darkMode,setDarkMode] = useState(false);
+  const plattteType = darkMode ? 'dark' : 'light';
+  
+  const theme = createTheme({
+	palette:{
+		mode:plattteType,
+		
+	}
+  })
+  function handleThemeChange(){
+	setDarkMode(!darkMode);
+  }
   return (
-      <div>
-          <h1>Sports Center</h1>   
-		<Catalog/>
-	  </div>
-      
+	<ThemeProvider theme={theme}>	
+     <CssBaseline/>
+	 <Header darkMode={darkMode} handleThemeChange={handleThemeChange}/>
+      <Container sx={{paddingTop: "64px"}}>
+	  	<Outlet/>
+	  </Container>
+	 </ThemeProvider> 
   )
 }
 
