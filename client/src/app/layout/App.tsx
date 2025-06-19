@@ -4,7 +4,8 @@ import { Container,CssBaseline , createTheme} from "@mui/material";
 import Header from "./Header";
 import { ThemeProvider } from "@emotion/react";
 import { Outlet } from "react-router-dom";
-
+import { ToastContainer} from  "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
@@ -14,14 +15,14 @@ function App() {
   const theme = createTheme({
 	palette:{
 		mode:plattteType,
-		
 	}
   })
   function handleThemeChange(){
 	setDarkMode(!darkMode);
   }
   return (
-	<ThemeProvider theme={theme}>	
+	<ThemeProvider theme={theme}>
+		<ToastContainer position="bottom-right" hideProgressBar theme="colored"/>	
      <CssBaseline/>
 	 <Header darkMode={darkMode} handleThemeChange={handleThemeChange}/>
       <Container sx={{paddingTop: "64px"}}>

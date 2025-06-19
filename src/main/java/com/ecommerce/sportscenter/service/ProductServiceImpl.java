@@ -13,6 +13,7 @@ import com.ecommerce.sportscenter.repository.ProductRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.extern.log4j.Log4j2;
 import com.ecommerce.sportscenter.entity.Product;
+import com.ecommerce.sportscenter.exceptions.ProductNotFoundException;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -31,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductResponse getProductById(Integer productId) {
 		log.info("fetching Product By Id");
 		Product product = productRepository.findById(productId)
-				.orElseThrow(() -> new RuntimeException("Product  doesnot exists"));
+				.orElseThrow(() -> new ProductNotFoundException("Product  doesnot exists"));
 		ProductResponse productResponse = convertToProductResponse(product);
 		log.info("Fetched Product by Product Id:{}",productId);
 		
