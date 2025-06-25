@@ -26,5 +26,5 @@ public class BasketItemResponse {
 
 	private String productType;
 
-	private Integer qunatity;
+	private Integer quantity;
 }

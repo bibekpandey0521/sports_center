@@ -82,10 +82,9 @@ public class BasketServiceImpl implements BasketService{
 				.name(basketItem.getName())
 				.description(basketItem.getDescription())
 				.price(basketItem.getPrice())
-				.price(basketItem.getPrice())
 				.productBrand(basketItem.getProductBrand())
 				.productType(basketItem.getProductType())
-				.qunatity(basketItem.getQunatity())
+				.quantity(basketItem.getQuantity())
 				.build();
 	}
 

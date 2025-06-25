@@ -16,5 +16,5 @@ public class BasketItem {
 	private String pictureUrl;
 	private String productBrand;
 	private String productType;
-	private Integer qunatity;
+	private Integer quantity;
 }
