@@ -1,0 +1,46 @@
+import { Box, Paper, Table, TableBody, TableContainer, TableRow, TableCell,Typography } from "@mui/material";
+import { useAppSelector } from "../../app/store/configureStore";
+
+export  default  function BasketSummary(){
+	const {basket} = useAppSelector(state=>state.basket);
+	const subTotal = basket?.items.reduce((sum,item)=> sum+ (item.quantity*item.price),0)??0;
+	const shipping = 200;
+	
+	const formatPrice = (price: number): string => {
+	    return new Intl.NumberFormat("en-NP", {
+	      style: "currency",
+	      currency: "NPR",
+	      minimumFractionDigits: 2
+	    }).format(price);
+	  };
+	  return (
+		<Box mt={4} p={2} bgcolor="background.default" borderRadius={8} boxShadow={3}>
+			<Typography variant="h5" gutterBottom>
+				Basket Summary
+			</Typography>
+			<TableContainer>
+				<Table>
+					<TableContainer component={Paper} variant="outlined">
+						<Table>
+							<TableBody>
+								<TableRow>
+									<TableCell>SubTotal</TableCell>
+									<TableCell align="right">{formatPrice(subTotal)}</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell>Shipping</TableCell>
+									<TableCell>{formatPrice(shipping)}</TableCell>
+								</TableRow>
+								  <TableRow>
+									  <TableCell>Total</TableCell>
+									  <TableCell align="right"><strong>{formatPrice(subTotal + shipping)}</strong></TableCell>
+								  </TableRow>																
+							</TableBody>
+						</Table>
+					</TableContainer>
+				</Table>
+			</TableContainer>
+		</Box>
+		
+	  )
+}

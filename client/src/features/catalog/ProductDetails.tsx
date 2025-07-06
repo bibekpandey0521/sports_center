@@ -6,26 +6,33 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Typography
+  Typography,
+  TextField,
 } from "@mui/material";
-//import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Product } from "../../app/models/product";
 import agent from "../../app/api/agent";
 import NotFound from "../../app/errors/NotFoundError";
 import Spinner from "../../app/layout/Spinner";
+import { LoadingButton } from "@mui/lab";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+
 export default function ProductDetails() {
+  const { basket } = useAppSelector(state => state.basket);	
+  const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+
+  const item = basket?.items.find(i => i.id === product?.id);
 
   const extractImageName = (item: Product): string | null => {
     if (item && item.pictureUrl) {
       const parts = item.pictureUrl.split("/");
-      if (parts.length > 0) {
-        return parts[parts.length - 1];
-      }
+      return parts[parts.length - 1];
     }
     return null;
   };
@@ -38,17 +45,54 @@ export default function ProductDetails() {
     }).format(price);
   };
 
-	//axios.get(`http://localhost:8080/api/products/${id}`)
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    id && agent.Store.details(parseInt(id)) 
-      .then(response => setProduct(response))
-      .catch(error => console.error(error))
-      .finally(() => setLoading(false));
-  }, [id]);
+    if (id) {
+      agent.Store.details(parseInt(id))
+        .then(response => {
+          setProduct(response);
+          const existingItem = basket?.items.find(i => i.id === response.id);
+          if (existingItem) {
+            setQuantity(existingItem.quantity);
+          }
+        })
+        .catch(error => console.error(error))
+        .finally(() => setLoading(false));
+    }
+  }, [id, basket]);
 
-  if(loading) return <Spinner message='Loading Products...'/>
-  if (!product) return <NotFound/>;
+  const inputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(event.target.value);
+    if (!isNaN(value) && value > 0) {
+      setQuantity(value);
+    }
+  };
+
+  const updateQuantity = async () => {
+    try {
+      setSubmitting(true);
+      const newItem = {
+        ...product!,
+        quantity: quantity
+      };
+      if (item) {
+        const quantityDifference = quantity - item.quantity;
+        if (quantityDifference > 0) {
+          await agent.Basket.incrementItemQuantity(item.id, quantityDifference, dispatch);
+        } else if (quantityDifference < 0) {
+          await agent.Basket.decrementItemQuantity(item.id, Math.abs(quantityDifference), dispatch);
+        }
+      } else {
+        await agent.Basket.addItem(newItem, dispatch);
+      }
+    } catch (error) {
+      console.log("Failed to update quantity:", error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) return <Spinner message="Loading Products..." />;
+  if (!product) return <NotFound />;
 
   return (
     <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={4} padding={4}>
@@ -89,6 +133,28 @@ export default function ProductDetails() {
             </TableBody>
           </Table>
         </TableContainer>
+
+        {/* Side-by-side Quantity and Button */}
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mt={2} alignItems="center">
+          <TextField
+            onChange={inputChange}
+            variant="outlined"
+            type="number"
+            label="Quantity in Cart"
+            value={quantity}
+            sx={{ width: { xs: '100%', sm: '250px' } }}
+          />
+          <LoadingButton
+            sx={{ height: '56px', minWidth: '260px' }}
+            color="primary"
+            size="large"
+            variant="contained"
+            loading={submitting}
+            onClick={updateQuantity}
+          >
+            {item ? 'Update Quantity' : 'Add to Cart'}
+          </LoadingButton>
+        </Box>
       </Box>
     </Box>
   );
